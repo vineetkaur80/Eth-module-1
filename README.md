@@ -44,3 +44,8 @@ To compile the code, click on the "Solidity Compiler" tab in the left-hand sideb
 Once the code is compiled, you can deploy the contract by clicking on the "Deploy & Run Transactions" tab in the left-hand sidebar. Select the contract from the dropdown menu, and then click on the "Deploy" button.
 
 Once the contract is deployed, you can interact with it by calling the school function. Click on the "School"contract in the left-hand sidebar, and then click on the "add teacher" function. Finally, click on the "transact" button to execute the function .
+# Authors
+Contributed by name : Vineet Kaur
+Email ID : kaurvineet80@gmail.com
+# License
+This project is licensed under the MIT License - see the LICENSE.md file for details

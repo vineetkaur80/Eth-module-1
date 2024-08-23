@@ -1,39 +1,35 @@
 # Smart-Contract
 This Solidity program is a simple "Smart-Contract" program that demonstrates the basic syntax and functionality of the Solidity programming language. The purpose of this program is to serve as a starting point for those who are new to Solidity and want to get a feel for how it works.
 ## Description
-pragma solidity ^0.8.0;
+```
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.9;
 
-contract School {
-    address public principal;
-    mapping(address => bool) public teachers;
-    uint256 public studentMarks;
+contract AdminControl {
+    address public admin;
+    uint256 public adminData;
+
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
 
     constructor() {
-        principal = msg.sender;
-    }
-    modifier onlyPrincipal() {
-        require(msg.sender == principal, "Only principal can perform this action.");
-        _;
-    } 
-    modifier onlyTeacher() {
-        require(teachers[msg.sender], "Only a registered teacher can perform this action.");
-        _;
-    }
-    function addTeacher(address _teacher) public onlyPrincipal {
-        teachers[_teacher] = true;
-    }
-    function removeTeacher(address _teacher) public onlyPrincipal {
-        teachers[_teacher] = false;
+        admin = msg.sender;
     }
 
-    function setStudentMarks(uint256 _marks) public onlyTeacher {
-        require(_marks <= 100, "Marks can't be more than 100.");
-        studentMarks = _marks;
+    function changeAdmin(address newAdmin) public onlyAdmin {
+        require(newAdmin != address(0), "New admin address cannot be zero");
+        admin = newAdmin;
     }
-    function resetStudentMarks() public onlyPrincipal {
-        studentMarks = 0;
+
+    function setAdminData(uint256 _data) public onlyAdmin {
+        adminData = _data;
     }
+
 }
+```
 # Getting started 
 ## Executing program
 To run this program, you can use Remix, an online Solidity IDE. To get started, go to the Remix website at https://remix.ethereum.org/.

@@ -1,38 +1,27 @@
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.9;
 
-contract School {
-    address public principal;
-    mapping(address => bool) public teachers;
-    uint256 public studentMarks;
+contract AdminControl {
+    address public admin;
+    uint256 public adminData;
+
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
 
     constructor() {
-        principal = msg.sender;
+        admin = msg.sender;
     }
 
-    modifier onlyPrincipal() {
-        require(msg.sender == principal, "Only principal can perform this action.");
-        _;
+    function changeAdmin(address newAdmin) public onlyAdmin {
+        require(newAdmin != address(0), "New admin address cannot be zero");
+        admin = newAdmin;
     }
 
-    modifier onlyTeacher() {
-        require(teachers[msg.sender], "Only a registered teacher can perform this action.");
-        _;
+    function setAdminData(uint256 _data) public onlyAdmin {
+        adminData = _data;
     }
 
-    function addTeacher(address _teacher) public onlyPrincipal {
-        teachers[_teacher] = true;
-    }
-
-    function removeTeacher(address _teacher) public onlyPrincipal {
-        teachers[_teacher] = false;
-    }
-
-    function setStudentMarks(uint256 _marks) public onlyTeacher {
-        require(_marks <= 100, "Marks can't be more than 100.");
-        studentMarks = _marks;
-    }
-
-    function resetStudentMarks() public onlyPrincipal {
-        studentMarks = 0;
-    }
 }

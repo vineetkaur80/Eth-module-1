@@ -3,31 +3,27 @@ This Solidity program is a simple "Smart-Contract" program that demonstrates the
 ## Description
 ```
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.9;
+pragma solidity ^0.8.0;
 
-contract AdminControl {
-    address public admin;
-    uint256 public adminData;
+contract MyContract {
+    uint public value;
 
-
-    modifier onlyAdmin() {
-        require(msg.sender == admin, "Only admin can call this function");
-        _;
+    function setValue(uint _value) public {
+        require(_value > 0, "Value must be greater than zero");
+        value = _value;
     }
 
-    constructor() {
-        admin = msg.sender;
+    function doubleValue() public {
+        value *= 2;
+        assert(value % 2 == 0); 
     }
 
-    function changeAdmin(address newAdmin) public onlyAdmin {
-        require(newAdmin != address(0), "New admin address cannot be zero");
-        admin = newAdmin;
+    function resetValue() public {
+        if (value == 0) {
+            revert("Value is already zero");
+        }
+        value = 0;
     }
-
-    function setAdminData(uint256 _data) public onlyAdmin {
-        adminData = _data;
-    }
-
 }
 ```
 # Getting started 

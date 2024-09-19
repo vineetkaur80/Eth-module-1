@@ -5,26 +5,85 @@ This Solidity program is a simple "Smart-Contract" program that demonstrates the
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract MyContract {
-    uint public value;
+contract LocalStore {
+    address public owner;
 
-    function setValue(uint _value) public {
-        require(_value > 0, "Value must be greater than zero");
-        value = _value;
+    struct Item {
+        string name;
+        uint price;
+        uint stock;
     }
 
-    function doubleValue() public {
-        value *= 2;
-        assert(value % 2 == 0); 
+    mapping(uint => Item) public items;
+    uint public itemCount;
+
+    event ItemPurchased(uint itemId, string itemName, uint quantity, address buyer);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the store owner can perform this action.");
+        _;
     }
 
-    function resetValue() public {
-        if (value == 0) {
-            revert("Value is already zero");
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addItem(string memory _name, uint _price, uint _stock) public onlyOwner {
+        require(_price > 0, "Price must be greater than 0.");
+        require(_stock > 0, "Stock must be greater than 0.");
+        
+        items[itemCount] = Item(_name, _price, _stock);
+        itemCount++;
+    }
+
+    function updateItem(uint _itemId, uint _price, uint _stock) public onlyOwner {
+        require(_itemId < itemCount, "Item does not exist.");
+        require(_price > 0, "Price must be greater than 0.");
+        require(_stock >= 0, "Stock cannot be negative.");
+        
+        items[_itemId].price = _price;
+        items[_itemId].stock = _stock;
+    }
+
+    function buyItem(uint _itemId, uint _quantity) public payable {
+        require(_itemId < itemCount, "Item does not exist.");
+        
+        Item storage item = items[_itemId];
+     
+        require(item.stock >= _quantity, "Not enough stock available.");
+   
+        uint totalPrice = item.price * _quantity;
+        require(msg.value >= totalPrice, "Insufficient funds sent.");
+   
+        item.stock -= _quantity;
+
+        if (msg.value > totalPrice) {
+            payable(msg.sender).transfer(msg.value - totalPrice);
         }
-        value = 0;
+
+        emit ItemPurchased(_itemId, item.name, _quantity, msg.sender);
     }
+
+    function revertSale(uint _itemId, uint _quantity) public onlyOwner {
+        require(_itemId < itemCount, "Item does not exist.");
+        
+        Item storage item = items[_itemId];
+        
+        if (_quantity > 0) {
+            item.stock += _quantity;
+        } else {
+            revert("Quantity must be greater than zero for reverting the sale.");
+        }
+    }
+
+    function validateStore() public view {
+    
+        assert(owner != address(0));
+    }
+
+    receive() external payable {}
 }
+
 ```
 # Getting started 
 ## Executing program
